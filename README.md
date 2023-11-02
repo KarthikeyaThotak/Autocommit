@@ -18,3 +18,11 @@ one single command...
 ## Required Software
 
 * GIT
+
+
+## Improvements
+If you have a feedback about this tool like improvements, thoughts please create new Issue... I will try mybest to add that featurein...
+
+
+## BuyMeACoffee
+[BuyMeACoffee for Karthikeya Thota](https://buymeacoffee.com/karthikeyaT)
