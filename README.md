@@ -7,10 +7,14 @@ one single command...
 
 
 ## Usage
-autocommit --commit "Commit Here" --repo "https://yourgithub-repo.com"
+* autocommit --commit 'Initial commit' --repo 'https://yourgithub-repo.com' --branch 'main'
 
 
 ## Tested Devices
 
 1. Linux
-2. MacOSX
+
+
+## Required Software
+
+* GIT
