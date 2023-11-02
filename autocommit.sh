@@ -27,6 +27,13 @@ autocommit() {
     git push -u origin "$branch_name" || { echo "Error: Git push failed"; exit 1; }
 }
 
+autocommit_git(){
+	git add --all || { echo "Error: Git add failed"; exit 1; }
+    git commit -m "$commit_message" || { echo "Error: Git commit failed"; exit 1; }
+    git branch -M "$branch_name" || { echo "Error: Git branch creation failed"; exit 1; }
+    git push -u origin "$branch_name" || { echo "Error: Git push failed"; exit 1; }
+}
+
 if [ $# -ne 6 ]; then
     echo "Error: Missing required options. You must provide all flags: --commit, --repo, and --branch."
     help
@@ -71,4 +78,12 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
-autocommit
+FILE=.git/
+if [ -d "$FILE" ]; then
+    echo ".Git already exits!"
+	autocommit_git
+else
+	autocommit
+fi
+
+
