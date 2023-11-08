@@ -4,18 +4,24 @@
 commit_message=""
 repo_url=""
 branch_name="main"
+email=""
+name=""
+email_specified=false
+name_specified=false
 
 # Function to display the help message
 help() {
-    echo "Usage: autocommit --commit COMMIT_MESSAGE --repo REPO_URL --branch BRANCH_NAME"
+    echo "Usage: autocommit --commit COMMIT_MESSAGE --repo REPO_URL [--branch BRANCH_NAME] [--email EMAIL] [--name NAME]"
     echo ""
     echo "Options:"
     echo "  --commit COMMIT_MESSAGE   Specify the commit message."
     echo "  --repo REPO_URL          Specify the GitHub repository URL."
     echo "  --branch BRANCH_NAME     Specify the branch name (default: main)."
+    echo "  --email EMAIL            Specify the Git user email."
+    echo "  --name NAME              Specify the Git user name."
     echo ""
     echo "Example:"
-    echo "  autocommit --commit 'Initial commit' --repo 'https://yourgithub-repo.com' --branch 'main'"
+    echo "  autocommit --commit 'Initial commit' --repo 'https://yourgithub-repo.com' --branch 'main' --email 'your@email.com' --name 'Your Name'"
 }
 
 autocommit() {
@@ -27,18 +33,17 @@ autocommit() {
     git push -u origin "$branch_name" || { echo "Error: Git push failed"; exit 1; }
 }
 
-autocommit_git(){
-	git add --all || { echo "Error: Git add failed"; exit 1; }
+autocommit_git() {
+    git add --all || { echo "Error: Git add failed"; exit 1; }
     git commit -m "$commit_message" || { echo "Error: Git commit failed"; exit 1; }
     git branch -M "$branch_name" || { echo "Error: Git branch creation failed"; exit 1; }
     git push -u origin "$branch_name" || { echo "Error: Git push failed"; exit 1; }
 }
 
-if [ $# -ne 6 ]; then
-    echo "Error: Missing required options. You must provide all flags: --commit, --repo, and --branch."
-    help
-    exit 1
-fi
+config() {
+    git config --global user.email "$email"
+    git config --global user.name "$name"
+}
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -69,6 +74,26 @@ while [[ $# -gt 0 ]]; do
                 exit 1
             fi
             ;;
+        --email)
+            if [ -n "$2" ]; then
+                email="$2"
+                shift
+                email_specified=true
+            else
+                echo "Error: '--email' requires an email address."
+                exit 1
+            fi
+            ;;
+        --name)
+            if [ -n "$2" ]; then
+                name="$2"
+                shift
+                name_specified=true
+            else
+                echo "Error: '--name' requires a name."
+                exit 1
+            fi
+            ;;
         *)
             echo "Error: Unknown option: $1"
             help
@@ -80,10 +105,17 @@ done
 
 FILE=.git/
 if [ -d "$FILE" ]; then
-    echo ".Git already exits!"
-	autocommit_git
+    if [ "$email_specified" = true ] && [ "$name_specified" = true ]; then
+        config
+        echo "Configuration Completed"
+    else
+        echo ".Git Already Exits! "
+        autocommit_git
+    fi
 else
-	autocommit
+    if [ "$email_specified" = true ] && [ "$name_specified" = true ]; then
+        config
+    else
+        autocommit
+    fi
 fi
-
-
